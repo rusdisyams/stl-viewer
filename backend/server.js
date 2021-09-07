@@ -3,24 +3,19 @@ const Router = require('koa-router')
 const json = require('koa-json')
 const serve = require('koa-static')
 const mount = require('koa-mount')
-//const cors = require('koa-cors')
+const mime = require('mime-types')
+const koaBody = require('koa-body')({ multipart: true, uploadDir: '.' })
 const models = require('./data/models')
 
 const app = new Koa()
 
 const router = new Router()
 
-const static_pages = new Koa()
+//const static_pages = new Koa()
 
-static_pages.use(serve(__dirname + '/../frontend/build')) //serve the build directory
+//static_pages.use(serve(__dirname + '/../frontend/build')) //serve the build directory
 
 async function index(ctx) {
-  // ctx.set('Access-Control-Allow-Origin', '*')
-  // ctx.set(
-  //   'Access-Control-Allow-Headers',
-  //   'Origin, X-Requested-With, Content-Type, Accept'
-  // )
-  // ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS')
   ctx.response.body = 'Welcome from Server'
 }
 
@@ -34,13 +29,22 @@ router.get('/api/models/:id', (ctx) => {
   ctx.body = model
 })
 
-//router.get('/', index)
+router.post('/upload', koaBody, async (ctx) => {
+  try {
+    const data = ctx.request.files.file
 
-//app.use(json())
+    console.log('data:' + data)
+    ctx.redirect('/')
+  } catch (err) {
+    console.log(`error ${err.message}`)
+  }
+  console.log('get file')
+})
+
 app.use(router.routes())
 app.use(router.allowedMethods())
 
-app.use(mount('/', static_pages))
+//app.use(mount('/', static_pages))
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => console.log(`Listening on PORT ${PORT}!`))

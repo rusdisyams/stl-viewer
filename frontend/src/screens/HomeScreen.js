@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Row, Col, Container, Button } from 'react-bootstrap'
-import Model from '../components/Model'
-import { Link } from 'react-router-dom'
+import { Row, Col, Container, Button, Card } from 'react-bootstrap'
 import axios from 'axios'
 
-const HomeScreen = () => {
+const HomeScreen = ({ loadingModel, getIdModel, uploadModel }) => {
   const [models, setModels] = useState([])
 
   useEffect(() => {
@@ -22,17 +20,30 @@ const HomeScreen = () => {
           <p>My uploaded STL Files:</p>
         </Col>
         <Col className='text-right'>
-          <Link to={'/upload'}>
-            <Button variant='primary' size='sm'>
-              Upload File
-            </Button>
-          </Link>
+          <Button
+            variant='primary'
+            size='sm'
+            onClick={() => uploadModel(true, 0)}
+          >
+            View 3D Model From Local Drive
+          </Button>
         </Col>
       </Row>
       <Row>
         {models.map((model) => (
           <Col key={model._id} sm={12} md={6} lg={4} xl={3}>
-            <Model model={model} />
+            <Card className='my-3 p-3 rounded'>
+              <Button
+                variant='secondary'
+                size='sm'
+                onClick={() => {
+                  loadingModel(true, 420)
+                  getIdModel(model._id)
+                }}
+              >
+                {model.name}
+              </Button>
+            </Card>
           </Col>
         ))}
       </Row>
